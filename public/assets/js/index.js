@@ -1,3 +1,4 @@
+// Comment
 const $noteTitle = $(".note-title");
 const $noteText = $(".note-textarea");
 const $saveNoteBtn = $(".save-note");
@@ -9,9 +10,8 @@ let activeNote = {};
 
 // A function for getting all notes from the db
 const getNotes = () => {
-  console.log("Two")
   return $.ajax({
-    url: "/api/notes",
+    url: "api/notes",
     method: "GET",
   });
 };
@@ -19,7 +19,7 @@ const getNotes = () => {
 // A function for saving a note to the db
 const saveNote = (note) => {
   return $.ajax({
-    url: "/api/notes",
+    url: "api/notes",
     data: note,
     method: "POST",
   });
@@ -138,7 +138,6 @@ const renderNoteList = (notes) => {
 
 // Gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => {
-  console.log("One")
   return getNotes().then(renderNoteList);
 };
 
