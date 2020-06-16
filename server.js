@@ -6,6 +6,10 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 
+// Sets up the reference to the json db for notes
+//----------------------------------------------------------
+const db = require("./db/db.json")
+
 // ==============================================================================
 // EXPRESS CONFIGURATION
 // This sets up the basic properties for our express server
@@ -18,27 +22,50 @@ var app = express();
 var PORT = process.env.PORT || 3000;
 
 // Sets up the Express app to handle data parsing
+//----------------------------------------------------------
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("./public"));
 app.use(express.json());
 
-// ================================================================================
-// ROUTER
-// The below points our server to a series of "route" files.
-// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
-// ================================================================================
 
-require("./routes/apiRoutes")(app);
-require("./routes/htmlRoutes")(app);
+// HTML GET Requests
+//----------------------------------------------------------
 
-// Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
-// Sets up the reference to the json db for notes
-var noteData = require("./db/db");
+app.get("/notes", function(req, res) {
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
+});
+
+// If no matching route is found default to home
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
+
+
+// API Routes
+//----------------------------------------------------------
+
+app.get("/api/notes", function(req, res) {
+  return res.json(db);
+});
+
+app.post("/api/notes", function(req, res) {
+  db.push(req.body);
+    res.json(true);
+});
+
+app.delete("/api/notes", function(req, res) {
+  db.push(req.body);
+    res.json(true);
+});
+
 
 // Starts the server to begin listening
 // =============================================================
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
+  console.log(db);
 });
