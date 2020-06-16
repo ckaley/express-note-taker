@@ -39,33 +39,48 @@ app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
-// If no matching route is found default to home
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "./public/index.html"));
-});
-
 
 // API Routes
 //----------------------------------------------------------
 
 app.get("/api/notes", function(req, res) {
+  // Return existing notes
   return res.json(db);
 });
 
 app.post("/api/notes", function(req, res) {
-  db.push(req.body);
-    res.json(true);
+    // Add new note to end of db array
+    db.push(req.body);
+
+    // Reset ids for the larger array
+    for (var i = 1; i<= db.length; i++){
+      db[i-1].id = i;
+}
+
+    // Write out to db file with the new note
+    fs.writeFileSync("./db/db.json", JSON.stringify(db, null, 2));
+  
+    // return notes
+    res.json(db);
 });
 
-app.delete("/api/notes", function(req, res) {
-  db.push(req.body);
-    res.json(true);
-});
+app.delete("/api/notes/:id", function(req, res) {
+  // Remove the selected note from array
+  db.splice(req.params.id-1, 1);
 
+  // Reset ids for the smaller array
+  for (var i = 1; i<= db.length; i++){
+      db[i-1].id = i;
+  }
+   // Write out to db file with the new note
+   fs.writeFileSync("./db/db.json", JSON.stringify(db, null, 2));
+
+   // Return notes
+  res.json(db);
+});
 
 // Starts the server to begin listening
 // =============================================================
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
-  console.log(db);
 });

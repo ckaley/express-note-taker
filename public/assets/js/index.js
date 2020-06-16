@@ -3,6 +3,7 @@ const $noteText = $(".note-textarea");
 const $saveNoteBtn = $(".save-note");
 const $newNoteBtn = $(".new-note");
 const $noteList = $(".list-container .list-group");
+let nextID = 1; // Used for setting the next ID for new notes
 
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
@@ -52,6 +53,7 @@ const renderActiveNote = () => {
 // Get the note data from the inputs, save it to the db and update the view
 const handleNoteSave = function () {
   const newNote = {
+    id: nextID,
     title: $noteTitle.val(),
     text: $noteText.val(),
   };
@@ -109,14 +111,14 @@ const renderNoteList = (notes) => {
 
   // Returns jquery object for li with given text and delete button
   // unless withDeleteButton argument is provided as false
-  const create$li = (text, withDeleteButton = true) => {
-    const $li = $("<li class='list-group-item'>");
+  const create$li = (text, noteId, withDeleteButton = true) => {
+    const $li = $("<li id='" + noteId + "'class='list-group-item'>");
     const $span = $("<span>").text(text);
     $li.append($span);
 
     if (withDeleteButton) {
-      const $delBtn = $(
-        "<i class='fas fa-trash-alt float-right text-danger delete-note'>"
+      const $delBtn = $("<i id="+ noteId +
+        " class='fas fa-trash-alt float-right text-danger delete-note'>"
       );
       $li.append($delBtn);
     }
@@ -124,11 +126,14 @@ const renderNoteList = (notes) => {
   };
 
   if (notes.length === 0) {
+    nextID = 0;
     noteListItems.push(create$li("No saved Notes", false));
   }
+ // Set the next ID to set for new notes, which is the next index in the array
+  nextID = notes.length++;
 
   notes.forEach((note) => {
-    const $li = create$li(note.title).data(note);
+    const $li = create$li(note.title, note.id).data(note);
     noteListItems.push($li);
   });
 
